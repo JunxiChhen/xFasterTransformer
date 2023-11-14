@@ -1,0 +1,8 @@
+[all_hosts:vars]
+# ansible_ssh_common_args='-o ProxyCommand="nc -X connect -x child-prc.intel.com:913 %h %p"'
+ansible_ssh_pass=qwer1234
+
+# replace all the devices for your needed.
+[all_hosts]
+192.168.14.92 #spr-92
+192.168.14.186 #emr-186

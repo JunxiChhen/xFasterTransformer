@@ -1,0 +1,5 @@
+---
+- name: Config .bashrc for oneCCL.
+  hosts: all_hosts
+
+  tasks:
