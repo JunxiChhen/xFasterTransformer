@@ -1,17 +1,19 @@
 #!/bin/bash
-
 set -x
+
 interrupt_handler() {
   exit 1
 }
 trap interrupt_handler SIGINT
 
-IFACE=enp1s0f0
+IFACE=eth0
 
-IP_A=10.17.146.106
-IP_B=10.17.146.105
-IP_C=10.17.146.107
-IP_D=10.17.146.108
+is_ali_cloud=0
+
+IP_A=192.168.0.1
+IP_B=192.168.0.2
+IP_C=192.168.0.3
+IP_D=192.168.0.4
 
 BENCHMARK=./example
 export XFT_ONECCL=1
