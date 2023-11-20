@@ -7,7 +7,23 @@
 ```shell
 pip install -r requirements.txt
 ```
+## memory bandwidth
+### download mlc
+https://www.intel.com/content/www/us/en/download/736633/intel-memory-latency-checker-intel-mlc.html
+```shell
+$ sudo ./mlc --max_bandwidth -b500m -Z
 
+$ sudo ./mlc --max_bandwidth -k0 -b500m -Z
+$ sudo ./mlc --max_bandwidth -k0,2 -b500m -Z
+$ sudo ./mlc --max_bandwidth -k0,2,4 -b500m -Z
+$ sudo ./mlc --max_bandwidth -k0,2,4,8 -b500m -Z
+$ sudo ./mlc --max_bandwidth -k0,2,4,8,10 -b500m -Z
+$ sudo ./mlc --max_bandwidth -k0,2,4,8,10,12 -b500m -Z
+$ sudo ./mlc --max_bandwidth -k0,2,4,8,10,12,14 -b500m -Z
+$ sudo ./mlc --max_bandwidth -k0,2,4,8,10,12,14,16 -b500m -Z
+
+$ sudo ./mlc --max_bandwidth -k0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94 -b500m -Z
+```
 ## network benchmark
 
 ```shell
