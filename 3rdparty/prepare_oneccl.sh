@@ -3,7 +3,7 @@
 # Prepare the dependency lib oneCCL
 dir="oneCCL"
 if [ ! -d "$dir" ]; then
-    git clone https://gitee.com/mirrors_oneapi-src/oneCCL.git $dir
+    git clone https://gitee.com/qccz123456/oneCCL.git $dir
     if [ -d "$dir" ]; then
         cd $dir
         git checkout 2021.10
