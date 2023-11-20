@@ -6,17 +6,17 @@ interrupt_handler() {
 }
 trap interrupt_handler SIGINT
 
-IFACE=eth0
+IFACE=enp1s0f0
 
-IP_A=192.168.0.1
-IP_B=192.168.0.2
-IP_C=192.168.0.3
-IP_D=192.168.0.4
+IP_A=10.17.146.106
+IP_B=10.17.146.105
+IP_C=10.17.146.107
+IP_D=10.17.146.108
 
 BENCHMARK=./example
-XFT_ONECCL=1
-XFT_COMM_TIME=1
-XFT_FAKE_MODEL=1
+export XFT_ONECCL=1
+export XFT_COMM_TIME=1
+export XFT_FAKE_MODEL=1
 
 # open for MPI debug information
 MPI_DEBUG="-prot -verbose -print-rank-map -print-all-exitcodes"
@@ -26,15 +26,15 @@ function run_1device_1s_1ins() {
   numa_node_0_hbm=0
   mpirun -iface=${IFACE} $MPI_DEBUG \
     -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 0
-}
+} &> test_run_1device_1s_1ins_${model_name}_${data_type}_${thread_count}_${loop_count}_${input_length}_${output_length}_${batch_size}.log
 
 function run_1device_1s_2ins() {
   numa_node_0=0
   numa_node_0_hbm=0
   mpirun -iface=${IFACE} $MPI_DEBUG \
-    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $nth 0 : \
-	  -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $nth 1
-}
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 0 : \
+	  -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 1
+} &> test_run_1device_1s_2ins_${model_name}_${data_type}_${thread_count}_${loop_count}_${input_length}_${output_length}_${batch_size}.log
 
 function run_1device_2s_1ins() {
   numa_node_0=0
@@ -42,9 +42,9 @@ function run_1device_2s_1ins() {
   numa_node_1=1
   numa_node_1_hbm=1
   mpirun -iface=${IFACE} $MPI_DEBUG \
-    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $nth 0 : \
-	  -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $nth 1
-}
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 0 : \
+	  -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 1
+} &> test_run_1device_2s_1ins_${model_name}_${data_type}_${thread_count}_${loop_count}_${input_length}_${output_length}_${batch_size}.log
 
 function run_1device_2s_2ins() {
   numa_node_0=0
@@ -52,17 +52,32 @@ function run_1device_2s_2ins() {
   numa_node_1=1
   numa_node_1_hbm=1
   mpirun -iface=${IFACE} $MPI_DEBUG \
-    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $nth 0 : \
-    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $nth 1 : \
-    -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $nth 2 : \
-    -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $nth 3
-}
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 0 : \
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 1 : \
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 2 : \
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 3
+} &> test_run_1device_2s_2ins_${model_name}_${data_type}_${thread_count}_${loop_count}_${input_length}_${output_length}_${batch_size}.log
+
+function run_2device_2s_1ins() {
+  numa_node_0=0
+  numa_node_0_hbm=0
+  numa_node_1=1
+  numa_node_1_hbm=1
+  mpirun -iface=${IFACE} $MPI_DEBUG \
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 0 : \
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 1 : \
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 2 : \
+    -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 3 : \
+    -n 1 -hosts ${IP_B} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 0 : \
+    -n 1 -hosts ${IP_B} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 1 : \
+    -n 1 -hosts ${IP_B} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 2 : \
+    -n 1 -hosts ${IP_B} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 3
+} &> test_run_2device_2s_1ins_${model_name}_${data_type}_${thread_count}_${loop_count}_${input_length}_${output_length}_${batch_size}.log
 
 current_dir=$(pwd)
 workspace_dir=$(echo $current_dir | sed 's|\(.*\/xFasterTransformer\).*|\1|')
 model_paths=$(ls -d $workspace_dir/examples/model_config/*/)
-# data_types=("fp16" "bf16" "int8" "bf16_fp16" "bf16_int8")
-data_types=("fp16")
+data_types=("fp16" "bf16" "int8" "bf16_fp16" "bf16_int8")
 batch_size=1
 input_length=32
 output_length=200
@@ -84,17 +99,20 @@ echo "current_dir: $current_dir"
 for model_path in $model_paths; do
     for data_type in "${data_types[@]}"; do
     ######################################################
-      model_name=$(basename "$model_path")
-      BENCHMARK=$BENCHMARK \
-      data_type=$data_type \
-      model_path=$model_path \
-      model_token_path=$model_path/tokenizer.model \
-      thread_count=$thread_count \
-      loop_count=$loop_count \
-      input_length=$input_length \
-      output_length=$output_length \
-      batch_size=$batch_size \
-      $func_name &> test_${func_name}_${model_name}_${data_type}_${thread_count}_${loop_count}_${input_length}_${output_length}_${batch_size}.log
+      export model_name=$(basename "$model_path")
+      export BENCHMARK=$BENCHMARK
+      export data_type=$data_type
+      export model_path=$model_path
+      export model_token_path=$model_path/tokenizer.model
+      export thread_count=$thread_count
+      export loop_count=$loop_count
+      export input_length=$input_length
+      export output_length=$output_length
+      export batch_size=$batch_size
+
+      run_1device_1s_1ins
+      run_1device_2s_1ins
+      run_2device_2s_1ins
     ######################################################
     done
 done
