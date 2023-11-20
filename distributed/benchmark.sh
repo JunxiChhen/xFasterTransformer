@@ -15,7 +15,7 @@ IP_D=10.17.146.108
 
 BENCHMARK=./example
 export XFT_ONECCL=1
-export XFT_COMM_TIME=1
+export XFT_COMM_TIME=0
 export XFT_FAKE_MODEL=1
 
 # open for MPI debug information
@@ -66,12 +66,8 @@ function run_2device_2s_1ins() {
   mpirun -iface=${IFACE} $MPI_DEBUG \
     -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 0 : \
     -n 1 -hosts ${IP_A} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 1 : \
-    -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 2 : \
-    -n 1 -hosts ${IP_A} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 3 : \
     -n 1 -hosts ${IP_B} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 0 : \
-    -n 1 -hosts ${IP_B} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 1 : \
-    -n 1 -hosts ${IP_B} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 2 : \
-    -n 1 -hosts ${IP_B} sh run.sh $numa_node_1 $numa_node_1_hbm $thread_count 3
+    -n 1 -hosts ${IP_B} sh run.sh $numa_node_0 $numa_node_0_hbm $thread_count 1
 } &> test_run_2device_2s_1ins_${model_name}_${data_type}_${thread_count}_${loop_count}_${input_length}_${output_length}_${batch_size}.log
 
 current_dir=$(pwd)
