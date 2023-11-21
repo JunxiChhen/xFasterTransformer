@@ -82,7 +82,7 @@ if [ "$current_dir" != "$workspace_dir/distributed" ]; then
     exit 1
 fi
 
-logs_dir=$(echo $current_dir/logs/`date "+%Y-%m-%d-%H:%M:%S"`)
+logs_dir=$(echo $current_dir/logs/`date "+%Y-%m-%d-%H-%M-%S"`)
 mkdir -p $logs_dir
 
 ############# HW configuration #############
