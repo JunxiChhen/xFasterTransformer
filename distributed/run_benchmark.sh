@@ -142,3 +142,5 @@ for model_path in $model_paths; do
     ######################################################
     done
 done
+
+python parser.py --log_path $logs_dir -i $input_length -o $output_length -p 50
