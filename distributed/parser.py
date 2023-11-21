@@ -5,18 +5,21 @@ import sys
 import argparse
 
 
-data_types = ["bf16_fp16", "bf16_int8", "bf16", "fp16", "int8"]
-model_names = ["baichuan2-7b", "baichuan2-13b", "chatglm-6b", "chatglm2-6b", "llama-2-7b", "llama-2-13b", "llama-2-70b", "llama-7b", "llama-13b", "opt-6.7b", "opt-30b", "opt-66b"]
 
 # test_run_1device_1s_1ins_${model_name}_${data_type}_${thread_count}_${loop_count}_${input_length}_${output_length}_${batch_size}.log
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--log_path", type=str, default="./logs", help="log file path")
+parser.add_argument("--model_config_path", type=str, default="../examples/model_config", help="model config file path")
 parser.add_argument("--token_in", "-i", type=int, help="Input Token Len")
 parser.add_argument("--token_out", "-o", type=int, help="Output Token Len, MaxLen=IN+OUT")
 parser.add_argument("--percentile", "-p", type=int, default=90, help="percentile P90/P99")
 args = parser.parse_args()
+
+data_types = ["bf16_fp16", "bf16_int8", "bf16", "fp16", "int8"]
+
+model_names = [file for file in os.listdir(args.model_config_path)]
 
 sheet = pd.DataFrame(columns=["device", "socket", "instance", "model", "dtype", "num_threads", "loop", "input_lens", "output_lens", "bs", f"P{args.percentile} infer latency(ms)", f"P{args.percentile} first_comm(ms)", f"P{args.percentile} second_comm(ms)", f"P{args.percentile} 1st token latency(ms)", f"P{args.percentile} 2nd token latency(ms)", "throughput(token/s)"])
 
