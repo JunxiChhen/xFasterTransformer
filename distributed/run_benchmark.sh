@@ -112,7 +112,7 @@ MPI_DEBUG="-prot -verbose -print-rank-map -print-all-exitcodes"
 
 ############# BENCHMARK configuration #############
 batch_size=1
-loop_count=3
+loop_count=5
 input_length=32
 output_length=200
 thread_count=48
@@ -143,4 +143,16 @@ for model_path in $model_paths; do
     done
 done
 
-python parser.py --log_path $logs_dir -i $input_length -o $output_length -p 50
+######################## Parse log ########################
+# usage: parser.py [-h] [--log_path LOG_PATH] [--token_in TOKEN_IN] [--token_out TOKEN_OUT] [--percentile PERCENTILE]
+# 
+# optional arguments:
+#   -h, --help            show this help message and exit
+#   --log_path LOG_PATH   log file path
+#   --token_in TOKEN_IN, -i TOKEN_IN
+#                         Input Token Len
+#   --token_out TOKEN_OUT, -o TOKEN_OUT
+#                         Output Token Len, MaxLen=IN+OUT
+#   --percentile PERCENTILE, -p PERCENTILE
+#                         percentile P90/P99
+python parser.py --log_path $logs_dir -i $input_length -o $output_length

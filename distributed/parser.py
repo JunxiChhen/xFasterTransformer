@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--log_path", type=str, default="./logs", help="log file path")
 parser.add_argument("--token_in", "-i", type=int, help="Input Token Len")
 parser.add_argument("--token_out", "-o", type=int, help="Output Token Len, MaxLen=IN+OUT")
-parser.add_argument("--percentile", "-p", type=int, default=90, help="Output Token Len, MaxLen=IN+OUT")
+parser.add_argument("--percentile", "-p", type=int, default=90, help="percentile P90/P99")
 args = parser.parse_args()
 
 sheet = pd.DataFrame(columns=["device", "socket", "instance", "model", "dtype", "num_threads", "loop", "input_lens", "output_lens", "bs", f"P{args.percentile} infer latency(ms)", f"P{args.percentile} first_comm(ms)", f"P{args.percentile} second_comm(ms)", f"P{args.percentile} 1st token latency(ms)", f"P{args.percentile} 2nd token latency(ms)", "throughput(token/s)"])
