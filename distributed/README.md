@@ -7,86 +7,40 @@
 ```shell
 pip install -r requirements.txt
 ```
-## memory bandwidth
-### download mlc
-https://www.intel.com/content/www/us/en/download/736633/intel-memory-latency-checker-intel-mlc.html
-```shell
-$ sudo ./mlc --max_bandwidth -b500m -Z
-
-$ sudo ./mlc --max_bandwidth -k0 -b500m -Z
-$ sudo ./mlc --max_bandwidth -k0,2 -b500m -Z
-$ sudo ./mlc --max_bandwidth -k0,2,4 -b500m -Z
-$ sudo ./mlc --max_bandwidth -k0,2,4,8 -b500m -Z
-$ sudo ./mlc --max_bandwidth -k0,2,4,8,10 -b500m -Z
-$ sudo ./mlc --max_bandwidth -k0,2,4,8,10,12 -b500m -Z
-$ sudo ./mlc --max_bandwidth -k0,2,4,8,10,12,14 -b500m -Z
-$ sudo ./mlc --max_bandwidth -k0,2,4,8,10,12,14,16 -b500m -Z
-
-$ sudo ./mlc --max_bandwidth -k0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94 -b500m -Z
-```
-## network benchmark
-
-```shell
-[root@xftest001 distributed]# ./IMB-MPI1 allreduce
-#----------------------------------------------------------------
-#    Intel(R) MPI Benchmarks 2021.3, MPI-1 part
-#----------------------------------------------------------------
-# Date                  : Mon Nov 20 19:56:00 2023
-# Machine               : x86_64
-# System                : Linux
-# Release               : 5.10.134-15.al8.x86_64
-# Version               : #1 SMP Thu Jul 20 00:44:04 CST 2023
-# MPI Version           : 3.1
-# MPI Thread Environment: 
-
-
-# Calling sequence was: 
-
-# ./IMB-MPI1 allreduce 
-
-# Minimum message length in bytes:   0
-# Maximum message length in bytes:   4194304
-#
-# MPI_Datatype                   :   MPI_BYTE 
-# MPI_Datatype for reductions    :   MPI_FLOAT 
-# MPI_Op                         :   MPI_SUM  
-# 
-# 
-
-# List of Benchmarks to run:
-
-# Allreduce
-
-#----------------------------------------------------------------
-# Benchmarking Allreduce 
-# #processes = 1 
-#----------------------------------------------------------------
-       #bytes #repetitions  t_min[usec]  t_max[usec]  t_avg[usec]
-            0         1000         0.04         0.04         0.04
-            4         1000         0.04         0.04         0.04
-            8         1000         0.04         0.04         0.04
-           16         1000         0.04         0.04         0.04
-           32         1000         0.04         0.04         0.04
-           64         1000         0.04         0.04         0.04
-          128         1000         0.04         0.04         0.04
-          256         1000         0.04         0.04         0.04
-          512         1000         0.05         0.05         0.05
-         1024         1000         0.05         0.05         0.05
-         2048         1000         0.05         0.05         0.05
-         4096         1000         0.07         0.07         0.07
-         8192         1000         0.08         0.08         0.08
-        16384         1000         0.13         0.13         0.13
-        32768         1000         0.75         0.75         0.75
-        65536          640         1.49         1.49         1.49
-       131072          320         3.05         3.05         3.05
-       262144          160         6.17         6.17         6.17
-       524288           80        12.11        12.11        12.11
-      1048576           40        25.30        25.30        25.30
-      2097152           20       146.44       146.44       146.44
-      4194304           10       291.86       291.86       291.86
-
-
-# All processes entering MPI_Finalize
-```
 
 ## 分布式测试
+
+### 1. 机器环境准备
+- 确保物理硬件相同, 网络在同一子网
+- [Optinal] 使用NFS存放代码, 确保环境一致
+- 使用ansible部署机器环境 1. 机器两两之间的免密ssh; 2. /etc/hosts文件下的 ip<->hosts映射;
+- [Optinal] 使用perf_tool的工具抓取一下环境性能:
+      1. svr_info
+      2. mlc 内存带宽
+      3. IMB-MPI1(all_reduce)看oneCCL的连通性和性能
+      ...
+
+### 2. XFT环境准备
+- 使用魔法下载XFT源码
+```shell
+git clone -b test/distributed https://github.com/intel/xFasterTransformer.git
+```
+- oneCCL环境配置
+```shell
+cd 3rdparty
+sh prepare_oneccl.sh
+source ./oneCCL/build/_install/env/setvars.sh
+
+# 测试oneCCL的连通性, IP_A,IP_B替换为机器IP
+cd ./oneCCL/build
+mpirun -print-rank-map -prot -n 2 -ppn 1 -hosts IP_A,IP_B ./_install/examples/benchmark/benchmark
+```
+- 编译XFT
+```shell
+mkdir build && cd build
+cmake ..
+http_proxy="添加魔法" https_proxy="添加魔法" make -j
+```
+
+### 3. XFT分布式测试
+修改run_benchmark.sh代码.
